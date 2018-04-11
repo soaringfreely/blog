@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="/static/plugins/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/static/plugins/font-awesome/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/static/css/edmure.css"/>
+    <link rel="stylesheet" href="/static/css/commons.css"/>
+    <link rel="stylesheet" href="/static/css/row-avatar.css"/>
+    <link rel="stylesheet" href="/static/css/theme/0.css"/>
+    <script type="text/javascript" src="/static/js/jquery-1.12.4.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/static/plugins/bootstrap/js/bootstrap.js"></script>
+</head>
+<body>
+{% include 'include/header.html' %}
+
+<div class="container">
+    <div>
+        <div class="col-md-8">
+            <div class="article-list">
+                {% for row in article_list %}
+                    <div class="article-item clearfix">
+                        <h3><a target="_blank"  href="/{{ row.blog.site }}/{{ row.nid }}.html">{{ row.title }}</a></h3>
+                        <div class="clearfix">
+                            <a class="avatar left" href="/{{ row.blog.site }}/{{ row.nid }}.html">
+                                <img src="/static/imgs/avatar/default.jpg">
+                            </a>
+                            {{ row.summary }}
+                        </div>
+                        <div class="footers" article_id="{{ row.nid }}">
+                            <a href="#">
+                                <i class="fa fa-user-o" aria-hidden="true"></i>
+                                <span>{{ row.blog.user.nickname }}</span>
+                            </a>
+                            <span>发布于 {{ row.create_time }}</span>
+                            <a class="com">
+                                <i class="fa fa-commenting-o" aria-hidden="true"></i>
+                                <span>{{ row.comment_count }}</span>
+                            </a>
+                            <a class="up">
+                                <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                                <span>{{ row.up_count }}</span>
+                            </a>
+                            <div class="comm" style="display: none">
+
+                                <textarea id="content" style="width: 100%;height:200px;" name="content" article="{{ article_id }}" user="{{ user_id }}" commetn_url="{{ request.path }}" ></textarea>
+                    <button onclick="reply()" class="btn btn-primary">发表回复</button>
+
+
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                {% endfor %}
+
+            </div>
+
+            <div class="clearfix">
+
+                <ul class="pagination">
+                    {{ page_str }}
+                </ul>
+
+            </div>
+
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default hot-recommend">
+                <div class="panel-heading">吐血推荐</div>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+                        {% for i in article_list %}
+                             <li><a target="_blank"  href="/{{ i.blog.site }}/{{ i.nid }}.html">{{ i.title }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="panel panel-default hot-comment">
+                <div class="panel-heading">评论最多</div>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+                        {% for i in top7 %}
+                             <li><a target="_blank"  href="/{{ i.blog.site }}/{{ i.nid }}.html">{{ i.title }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    function reply(dat) {
+{#        console.log('t',$(dat));#}
+        var a = $(dat).prev('textarea');
+        var url = a.attr('commetn_url');
+        var user_id = a.attr('user');
+        var article_id = a.attr('article');
+        var reply = a.attr('reply');
+        var content = a.val();
+{#        console.log(a);#}
+{#        console.log({'content':a.val(), 'article': article_id, 'user': user_id, 'reply': reply}, url);#}
+        $.ajax({
+            url:url,
+            type: 'post',
+            headers:{'x-CSRFtoken': $.cookie('csrftoken')},
+            data:{'content': a.val(), 'article': article_id, 'user': user_id, 'reply': reply},
+            success:function (data) {
+                if(data == 'ok'){
+                    var cc = $(dat).parent().prev().prev();
+                    cc.children('span').text(parseInt(cc.children('span').text())+1);
+
+                    cc.click();
+                    cc.click();
+                }else {
+{#                    console.log(data);#}
+                    self.location = 'login.html';
+                }
+
+            }
+        })
+    }
+    function floor(id) {
+        var flag = "#"+id;
+        return $(flag).attr('floor');
+    }
+    $(".com").click(function () {
+        //点击评论;
+        var a = $(this).parent().children('div');
+        console.log(a);
+        a.toggle();
+        if(a.css('display') == 'block'){
+            var article_id = $(this).parent().attr('article_id');
+            var href = $(this).parent().siblings('h3').children().attr('href');
+{#            console.log('href', href);#}
+            $.ajax({
+                url: '/comment/',
+                type: 'POST',
+                headers:{'x-CSRFtoken':$.cookie('csrftoken')},
+                data: {'nid': $(this).parent().attr('article_id')},
+                success:function (data) {
+                    a.empty();
+                    var d = JSON.parse(data);
+
+                    for (var i in d){
+{#                        console.log(d[i]);#}
+                        var comment_item = document.createElement('div');
+                            var reply_title = document.createElement('div');
+
+                                var user_info = document.createElement('div');
+                                    var user_name = document.createElement('span');
+                                    var comm_floor = document.createElement('span');
+                                    var comm_time = document.createElement('span');
+                                var reply = document.createElement('div');
+                                    var reply_span = document.createElement('span');
+
+                            var reply_body = document.createElement('div');
+
+                                var reply_user = document.createElement('div');
+                                    if(d[i]['reply_id']){
+                                        reply_user.className='reply-user';
+                                        reply_user.style.backgroundColor='silver';
+                                        var fl = floor(d[i]['reply_id']);
+                                        reply_user.innerText='回复:'+fl+'楼';
+                                    }
+                                var content = document.createElement('div');
+
+                        reply.className='reply';
+                        reply_span.innerText='回复';
+                        reply_span.className='reply_sb';
+                        reply_span.setAttribute('uname', '回复：3楼');
+                        reply_span.setAttribute('reply', '23');
+                        reply.append(reply_span);
+                        reply_body.className='reply-body';
+                        user_info.className='user-info';
+                        user_name.setAttribute('id',d[i]['nid']);
+                        user_name.setAttribute('floor', parseInt(i)+1);
+                        user_name.innerText=d[i]['user__username'];
+                        comm_floor.innerText='#'+(parseInt(i)+1)+'楼';
+                        comm_time.innerText=d[i]['create_time'];
+                        content.innerText=d[i]['content'];
+                        content.className='content';
+                        comment_item.style.border= '1px solid red';
+                        comment_item.className= 'comment-item';
+                        reply_title.className= 'reply-title clearfix';
+                        reply_body.appendChild(reply_user);
+                        reply_body.appendChild(content);
+                        user_info.appendChild(user_name);
+                        user_info.appendChild(comm_floor);
+                        user_info.appendChild(comm_time);
+                        reply_title.appendChild(user_info);
+                        reply_title.appendChild(reply);
+                        comment_item.append(reply_title);
+                        comment_item.append(reply_body);
+                        a.append(comment_item);
+
+
+
+
+
+
+                    }
+                    console.log(a);
+                    var textarea = document.createElement('textarea');
+                    textarea.setAttribute('id', 'content');
+                    textarea.setAttribute('name', 'content');
+                    textarea.setAttribute('article', article_id);
+                    textarea.setAttribute('commetn_url', href);
+                    textarea.style.width= '100%';
+                    var but = document.createElement('button');
+                    but.setAttribute('onclick', 'reply(this)')
+                    but.innerText='发表回复';
+                    a.append(textarea);
+                    a.append(but);
+
+
+
+
+{#                    <textarea id="content" style="width: 100%;height:200px;" name="content" article="{{ article_id }}" user="{{ user_id }}" commetn_url="{{ request.path }}" ></textarea>#}
+{#                    <button onclick="reply()" class="btn btn-primary">发表回复</button>#}
+                }
+            })
+        }
+
+    });
+    $(".up").click(function () {
+        console.log($(this).parent().attr('article_id'));
+    });
+</script>
+</body>
+</html>

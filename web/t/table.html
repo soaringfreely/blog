@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑框</title>
+	<link rel="stylesheet" type="text/css" href="table.css">
+</head>
+<body>
+    <div style="padding: 20px;">
+        <input type="button" onclick="CheckAll('#tb')" value="全选" />
+        <input type="button" onclick="CheckReverse('#tb')" value="反选" />
+        <input type="button" onclick="CancleAll('#tb')" value="取消" />
+        <input type="button" onclick="EditMode('#tb')" value="编辑"/>
+        <input type="button" onclick="SaveMode('#tb')" value="保存"/>
+    </div>
+    <table border="1">
+        <thead>
+            <tr>
+                <td>选择</td>
+                <td>主机名</td>
+                <td>端口</td>
+                <td>状态</td>
+            </tr>
+        </thead>
+        <tbody id="#tb">
+            <tr>
+                <td><input type="checkbox" /></td>
+                <td><input type="text" readonly="readonly" class="noline" value="host1"></td>
+                <td><input type="text" readonly="readonly" class="noline" value="8080"></td>
+                <td>在线</td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" /></td>
+                <td><input type="text" readonly="readonly" class="noline" value="host2"></td>
+                <td><input type="text" readonly="readonly" class="noline" value="8081"></td>
+                <td>在线</td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" /></td>
+                <td><input type="text" readonly="readonly" class="noline" value="host3"></td>
+                <td><input type="text" readonly="readonly" class="noline" value="8082"></td>
+                <td>在线</td>
+            </tr>
+        </tbody>
+    </table>
+    <script type="text/javascript" src="./jquery-1.12.4.js"></script>
+    <script>
+        function CheckAll() {
+    $(':checkbox').prop('checked',true);
+}
+function CancleAll() {
+    $(':checkbox').prop('checked',false);
+}
+function CheckReverse() {
+    $(':checkbox').each(function(){
+        var v = $(this).prop('checked')?false:true;
+        $(this).prop('checked',v);
+    })
+}
+function EditMode() {
+     $(':checkbox').each(function(){
+
+        if($(this).prop('checked')){
+            console.log(this);
+            var tr = $(this).parent();
+            var host = tr.next().children('input');
+            var port = tr.next()
+            host.removeClass("noline");
+            host.addClass("haveline");
+            host.removeAttr("readonly");
+            // $("input").removeClass("noline");
+            // $("input").addClass("haveline");
+            // $("input").removeAttr("readonly");
+        }
+     })
+}
+function SaveMode() {
+     $(':checkbox').each(function(){
+        if($(this).prop('checked')){
+            $("input").removeClass("haveline");
+            $("input").addClass("noline");
+            $("input").attr("readonly","readonly");
+        }
+     })
+}
+
+    </script>
+</body>
+</html>

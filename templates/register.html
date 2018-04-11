@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="/static/plugins/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/static/plugins/font-awesome/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/static/css/edmure.css"/>
+    <link rel="stylesheet" href="/static/css/commons.css"/>
+    <link rel="stylesheet" href="/static/css/account.css"/>
+    <style>
+
+    </style>
+</head>
+<body>
+<div class="register">
+    <div style="font-size: 25px; font-weight: bold;text-align: center;">
+        用户注册
+    </div>
+    <form role="form" method="post">
+    {% csrf_token %}
+        <div class="form-group">
+            <label for="username">用户名</label>
+            <p class="alert-danger">{{ obj.errors.username.0 }}</p>
+            {{ obj.username }}
+        </div>
+        <div class="form-group">
+            <label for="email">邮箱</label>
+            <p class="alert-danger">{{ obj.errors.email.0 }}</p>
+            {% if emailerr %}
+                <p class="alert-danger">{{ emailerr }}</p>
+            {% endif %}
+            {{ obj.email }}
+        </div>
+        <div class="form-group">
+            <label for="password">密码</label>
+            <p class="alert-danger">{{ obj.errors.password.0 }}</p>
+            {{ obj.password }}
+        </div>
+        <div class="form-group">
+            <label for="password2">确认密码</label>
+            {% if obj.errors.password2.0 %}
+                <p class="alert-danger">{{ obj.errors.password2.0 }}</p>
+            {% elif err %}
+                <p class="alert-danger">{{ err }}</p>
+            {% endif %}
+            {{ obj.password2 }}
+        </div>
+
+        <div class="form-group">
+            <label for="code">验证码</label>
+            <p class="alert-danger">{{ obj.errors.code.0 }}</p>
+            <div class="row">
+                <div class="col-xs-7">
+                    {{ obj.code }}
+                </div>
+                <div class="col-xs-5">
+                    <img src="/check_code.html">
+                </div>
+            </div>
+
+        </div>
+
+        <input type="submit" class="btn btn-default" value="下一步"/>
+    </form>
+</div>
+</body>
+</html>

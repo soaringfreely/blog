@@ -1,0 +1,198 @@
+{% extends 'backend_layout.html' %}
+{% block css %}
+
+{% endblock %}
+{% block conent %}
+    <ol class="breadcrumb">
+        <li><a href="#">分类管理</a></li>
+        <li class="active">分类列表</li>
+    </ol>
+    <div>
+        <div class="row" style="padding: 20px 5px;">
+            <form class="form-horizontal" method="post">
+                {% csrf_token %}
+                <div class="col-xs-12">
+
+
+                    <div class="form-group">
+                        <label class="col-xs-1 control-label">分类名称</label>
+
+                        <div class="col-xs-3">
+                            <input type="text" class="form-control" id="nickname" placeholder="请输入分类名称" name="title">
+                            <input type="number" name="func" value=0 class="hidden">
+                        </div>
+                        <div class="col-xs-3">
+                            <input type="submit" class="btn btn-primary" value="添 加">
+                        </div>
+                    </div>
+
+
+                    {% if err %}
+                        <div class="form-group">
+                        <label class="col-xs-1 control-label">警告</label>
+                        <div class="col-xs-3">
+                            <span style="background-color: red" class="btn">{{ err }}</span>
+                        </div>
+                        </div>
+                        {% endif %}
+
+
+                </div>
+            </form>
+        </div>
+
+        <div style="height: 35px;background-color: #f5f5f5;line-height: 35px;padding: 0 15px;">
+            <i class="fa fa-table" aria-hidden="true"></i>
+            标签列表
+        </div>
+
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>分类</th>
+                <th>文章个数</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+{#            <tr>#}
+{#                <td>妹子</td>#}
+{#                <td>10</td>#}
+{#                <td>#}
+{#                    <a class="btn btn-danger btn-xs">#}
+{#                        <i class="fa fa-times" aria-hidden="true"></i>#}
+{#                        删除#}
+{#                    </a>#}
+{#                    |#}
+{#                    <a class="btn btn-primary btn-xs">#}
+{#                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>#}
+{#                        编辑#}
+{#                    </a>#}
+{#                </td>#}
+{#            </tr>#}
+{#            <tr>#}
+{#                <td>Coding</td>#}
+{#                <td>8</td>#}
+{#                <td>#}
+{#                    <a class="btn btn-danger btn-xs">#}
+{#                        <i class="fa fa-times" aria-hidden="true"></i>#}
+{#                        删除#}
+{#                    </a>#}
+{#                    |#}
+{#                    <a class="btn btn-primary btn-xs">#}
+{#                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>#}
+{#                        编辑#}
+{#                    </a>#}
+{#                </td>#}
+{#            </tr>#}
+{#            <tr>#}
+{#                <td>旅行</td>#}
+{#                <td>10</td>#}
+{#                <td>#}
+{#                    <a class="btn btn-danger btn-xs">#}
+{#                        <i class="fa fa-times" aria-hidden="true"></i>#}
+{#                        删除#}
+{#                    </a>#}
+{#                    |#}
+{#                    <a class="btn btn-primary btn-xs">#}
+{#                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>#}
+{#                        编辑#}
+{#                    </a>#}
+{#                </td>#}
+{#            </tr>#}
+                        {% for i in obj %}
+                <tr nid="{{ i.nid }}">
+                <td><input style="border: 0; background: none" type="text" disabled value="{{ i.title }}"><span class="hidden">{{ i.title }}</span></td>
+                <td>{{ i.article_set.all.count }}</td>
+                <td>
+                    <a class="btn btn-danger btn-xs">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                        删除
+                    </a>
+                    |
+                    <a class="btn btn-primary btn-xs">
+                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                        编辑
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="clearfix">
+            <ul class="pagination right" style="margin-top: 0">
+              {{ page_str }}
+            </ul>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block js %}
+<script>
+// 删除按钮
+$(".btn-danger").each(function () {
+    $(this).click(function () {
+        var t = $(this).parent().parent();
+        console.log(t.attr('nid'));
+        $.ajax({
+            headers:{'x-CSRFtoken': $.cookie('csrftoken')},
+            type:"POST",
+            data: {'func': '1', 'nid': t.attr('nid')},
+            success: function (data, a1, a2) {
+                if(data == 'ok'){
+                    t.remove();
+                }else {
+                    alert(data)
+                }
+            }
+        })
+    })
+});
+
+// 编辑按钮
+$('.btn-primary').each(function () {
+    $(this).click(function () {
+        var t = $(this).parent().prev().prev();
+        var a = $(this);
+        if(a.text() != '确定'){
+            t.children('input').removeAttr('disabled').focus();
+            a.text('确定')
+        }else {
+{#            console.log(t.children('input').val());#}
+{#            console.log(t.children('span').text());#}
+            if (t.children('input').val()!=t.children('span').text()){
+                $.ajax({
+                    headers:{'x-CSRFtoken': $.cookie('csrftoken')},
+                    type:"POST",
+                    data: {
+                        'func': '2',
+                        'nid': t.parent().attr('nid'),
+                        'title': t.children('input').val()
+                    },
+                    success: function (data, a1, a2) {
+                        if(data == 'ok'){
+                            var l = document.createElement('li');
+                            l.className = "fa fa-pencil-square-o";
+                            a.text('编辑').prepend(l);
+                            t.children('input').attr('disabled', true);
+                            t.children('span').text(t.children('input').val());
+                        }else {
+                            alert(data)
+                        }
+                    }
+                })
+            }else {
+                var l = document.createElement('li');
+                l.className = "fa fa-pencil-square-o";
+                a.text('编辑').prepend(l);
+                t.children().attr('disabled', true)
+            }
+        }
+    })
+})
+
+</script>
+{% endblock %}

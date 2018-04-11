@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<div class="comment-item">
+    <div class="reply-title clearfix">
+        <div class="user-info">
+            <span id="23" floor="3">哭你起哇 </span><span class="floor"> #3楼</span>
+            <span>May 25, 2017, 8:40 a.m.</span>
+        </div>
+        <div class="reply">
+            <span class="reply_sb" uname="回复：3楼" reply="23">回复</span>
+        </div>
+    </div>
+    <div class="reply-body">
+
+        {% if comment.reply %}
+                    <div class="reply-user" style="background-color: silver; padding-bottom: 10px">回复: <script>(function () {
+                        document.write($("#{{ comment.reply.nid }}").attr('floor'));
+                    })()</script>楼
+                    </div>
+        {% endif %}
+        <div class="content">
+            老牛逼了
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>
