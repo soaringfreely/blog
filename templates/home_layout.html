@@ -14,7 +14,11 @@
     <script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
     <script type="text/javascript" src="/static/plugins/bootstrap/js/bootstrap.js"></script>
 </head>
+
 <body>
+
+{% load count_article %}
+
 <div class="pg-header">
     <div class="title">{{ blog.title }}</div>
     <div class="menu-list">
@@ -44,7 +48,8 @@
             <div class="tags-body">
                 <ul>
                     {% for tag in tag_list %}
-                        <li><a href="/{{ blog.site }}/tag/{{ tag.nid }}.html">{{ tag.title }}({{ tag.article_set.count }})</a></li>
+{#                        <li><a href="/{{ blog.site }}/tag/{{ tag.nid }}.html">{{ tag.title }}({{ tag.article_set.count }})</a></li>#}
+                        <li><a href="/{{ blog.site }}/tag/{{ tag.nid }}.html">{{ tag.title }}({% published tag.article_set %})</a></li>
                     {% endfor %}
                 </ul>
             </div>
@@ -54,7 +59,7 @@
             <div class="types-body">
                 <ul>
                     {% for tag in category_list %}
-                        <li><a href="/{{ blog.site }}/category/{{ tag.nid }}.html">{{ tag.title }}({{ tag.article_set.count }})</a></li>
+                        <li><a href="/{{ blog.site }}/category/{{ tag.nid }}.html">{{ tag.title }}({% published tag.article_set %})</a></li>
                     {% endfor %}
                 </ul>
 
