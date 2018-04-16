@@ -9,27 +9,32 @@ class XSSFilter(object):
     def __init__(self):
         # XSS白名单
         self.valid_tags = {
+            'h1': ['border', 'cellspacing', 'cellpadding', 'style', 'class'],
+            'h2': ['border', 'cellspacing', 'cellpadding', 'style', 'class'],
+            'h3': ['border', 'cellspacing', 'cellpadding', 'style', 'class'],
+            'h4': ['border', 'cellspacing', 'cellpadding', 'style', 'class'],
+            'br': [],
+            'ul':[],
+            'ol':[],
+            'li':[],
             "font": ['color', 'size', 'face', 'style'],
             'b': [],
             'div': [],
-            "span": [],
-            "table": [
-                'border', 'cellspacing', 'cellpadding'
-            ],
-            'th': [
-                'colspan', 'rowspan'
-            ],
-            'td': [
-                'colspan', 'rowspan'
-            ],
+            "span": ['border', 'cellspacing', 'cellpadding','style','class'],
+            "table": ['border', 'cellspacing', 'cellpadding','style','class'],
+            'th': ['colspan', 'rowspan'],
+            'td': ['colspan', 'rowspan'],
+            'tr':[],
             "a": ['href', 'target', 'name'],
             "img": ['src', 'alt', 'title'],
-            'p': [
-                'align'
-            ],
-            "pre": ['class'],
-            "hr": ['class'],
-            'strong': []
+            'p': ['align','border', 'cellspacing', 'cellpadding', 'style', 'class'],
+            "pre": ['class','style'],
+            "hr": ['class','style'],
+            'strong': ['style'],
+            'em': ['style'],
+            'u': ['style'],
+            's': ['style'],
+            'blockquote':[],
         }
 
     def __new__(cls, *args, **kwargs):
